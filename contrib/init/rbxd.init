@@ -1,0 +1,67 @@
+#!/bin/bash
+#
+#  rbxd The Rubus Core server.
+#
+#
+# chkconfig: 345 80 20
+# description: rbxd
+# processname: rbxd
+#
+
+# Source function library.
+. /etc/init.d/functions
+
+# you can override defaults in /etc/sysconfig/rbxd, see below
+if [ -f /etc/sysconfig/rbxd ]; then
+        . /etc/sysconfig/rbxd
+fi
+
+RETVAL=0
+
+prog=rbxd
+# you can override the lockfile via BITCOIND_LOCKFILE in /etc/sysconfig/rbxd
+lockfile=${BITCOIND_LOCKFILE-/var/lock/subsys/rbxd}
+
+# rbxd defaults to /usr/bin/rbxd, override with BITCOIND_BIN
+bitcoind=${BITCOIND_BIN-/usr/bin/rbxd}
+
+# rbxd opts default to -disablewallet, override with BITCOIND_OPTS
+bitcoind_opts=${BITCOIND_OPTS}
+
+start() {
+    echo -n $"Starting $prog: "
+    daemon $DAEMONOPTS $bitcoind $bitcoind_opts
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && touch $lockfile
+    return $RETVAL
+}
+
+stop() {
+    echo -n $"Stopping $prog: "
+    killproc $prog
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && rm -f $lockfile
+    return $RETVAL
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    status)
+        status $prog
+        ;;
+    restart)
+        stop
+        start
+        ;;
+    *)
+        echo "Usage: service $prog {start|stop|status|restart}"
+        exit 1
+        ;;
+esac

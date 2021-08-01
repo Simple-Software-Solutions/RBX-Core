@@ -1,0 +1,3 @@
+usr/local/bin/rbxd usr/bin
+usr/local/bin/rbx-cli usr/bin
+debian/examples/rbx.conf etc/rbx

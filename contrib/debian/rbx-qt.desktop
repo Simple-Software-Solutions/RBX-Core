@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Name=Rubus Core
+Comment=Rubus P2P Cryptocurrency
+Comment[fr]=RBX, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=RBX, eşten eşe kriptografik sanal para birimi
+Exec=rbx-qt %u
+Terminal=false
+Type=Application
+Icon=rbx128
+MimeType=x-scheme-handler/rbx;
+Categories=Office;Finance;
+StartupWMClass=Rbx-qt
