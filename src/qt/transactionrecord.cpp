@@ -54,7 +54,7 @@ bool TransactionRecord::decomposeCoinStake(const CWallet* wallet, const CWalletT
     } else if (isminetype mine = wallet->IsMine(wtx.tx->vout[2])) {
         //Masternode reward
         CTxDestination destMN;
-        int nIndexMN = (int) wtx.tx->vout.size() - 1;
+        int nIndexMN = (int) wtx.tx->vout.size() - 2;
         if (ExtractDestination(wtx.tx->vout[nIndexMN].scriptPubKey, destMN) && (mine = IsMine(*wallet, destMN)) ) {
             sub.involvesWatchAddress = mine & ISMINE_WATCH_ONLY;
             sub.type = TransactionRecord::MNReward;
@@ -62,12 +62,12 @@ bool TransactionRecord::decomposeCoinStake(const CWallet* wallet, const CWalletT
             sub.credit = wtx.tx->vout[nIndexMN].nValue;
         }
     } else if (isminetype mine = wallet->IsMine(wtx.tx->vout[i])) {
-        CTxDestination destMN;
+        CTxDestination destDev;
         int nIndexDevFee = (int) wtx.tx->vout.size() - 1;
-        if (ExtractDestination(wtx.tx->vout[nIndexDevFee].scriptPubKey, destMN) && (mine = IsMine(*wallet, destMN)) ) {
+        if (ExtractDestination(wtx.tx->vout[nIndexDevFee].scriptPubKey, destDev) && (mine = IsMine(*wallet, destDev)) ) {
             sub.involvesWatchAddress = mine & ISMINE_WATCH_ONLY;
             sub.type = TransactionRecord::DevReward;
-            sub.address = EncodeDestination(destMN);
+            sub.address = EncodeDestination(destDev);
             sub.credit = wtx.tx->vout[nIndexDevFee].nValue;
         }
     }
