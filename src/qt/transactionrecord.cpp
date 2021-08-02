@@ -32,6 +32,7 @@ bool TransactionRecord::decomposeCoinStake(const CWallet* wallet, const CWalletT
 
     const uint256& hash = wtx.GetHash();
     TransactionRecord sub(hash, wtx.GetTxTime(), wtx.tx->GetTotalSize());
+    int i = (int) wtx.tx->vout.size();
 
     if (isminetype mine = wallet->IsMine(wtx.tx->vout[1])) {
         // Check for cold stakes.
@@ -60,14 +61,14 @@ bool TransactionRecord::decomposeCoinStake(const CWallet* wallet, const CWalletT
             sub.address = EncodeDestination(destMN);
             sub.credit = wtx.tx->vout[nIndexMN].nValue;
         }
-    } else if (isminetype mine = wallet->IsMine(wtx.tx->vout[3])) {
+    } else if (isminetype mine = wallet->IsMine(wtx.tx->vout[i])) {
         CTxDestination destMN;
-        int nIndexMN = (int) wtx.tx->vout.size() - 1;
-        if (ExtractDestination(wtx.tx->vout[nIndexMN].scriptPubKey, destMN) && (mine = IsMine(*wallet, destMN)) ) {
+        int nIndexDevFee = (int) wtx.tx->vout.size() - 1;
+        if (ExtractDestination(wtx.tx->vout[nIndexDevFee].scriptPubKey, destMN) && (mine = IsMine(*wallet, destMN)) ) {
             sub.involvesWatchAddress = mine & ISMINE_WATCH_ONLY;
             sub.type = TransactionRecord::DevReward;
             sub.address = EncodeDestination(destMN);
-            sub.credit = wtx.tx->vout[nIndexMN].nValue;
+            sub.credit = wtx.tx->vout[nIndexDevFee].nValue;
         }
     }
 
@@ -652,7 +653,7 @@ int TransactionRecord::getOutputIndex() const
 
 bool TransactionRecord::isCoinStake() const
 {
-    return (type == TransactionRecord::StakeMint || type == TransactionRecord::Generated || type == TransactionRecord::StakeZRBX);
+    return (type == TransactionRecord::StakeMint || type == TransactionRecord::Generated || type == TransactionRecord::StakeZRBX || type == TransactionRecord::DevReward);
 }
 
 bool TransactionRecord::isAnyColdStakingType() const
